@@ -1,7 +1,15 @@
 FROM centos:centos8
+ONBUILD ARG JENKINS_USER=jenkins
+ONBUILD ARG JENKINS_UID=1033
+ARG JENKINS_GROUP=${JENKINS_USER}
+
+RUN echo "${JENKINS_USER}----${JENKINS_USER}"
 
 ONBUILD RUN yum clean all && yum update -y
 WORKDIR /opt
+RUN cd /etc/yum.repos.d/ && sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
+        sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
+        yum update -y
 RUN yum clean all && \
 yum update -y && \
 yum install -y dstat \
@@ -19,8 +27,8 @@ yum install -y dstat \
                 yum-utils \
                 zip && \
     mkdir /dist && \
-    ln -sf /usr/share/zoneinfo/US/Pacific /etc/localtime && \
-    yum clean all
+    ln -sf /usr/share/zoneinfo/US/Pacific /etc/localtime 
+
 
 
 RUN yum install epel-release -y
@@ -55,7 +63,6 @@ rm -rf /dist/java/lib/missioncontrol
 ENV JAVA_HOME=/usr/bin/java
 ENV PATH $JAVA_HOME/bin:$PATH
 
-RUN yum install -y yum-utils
 RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
 RUN yum -y install packer
 
