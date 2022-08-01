@@ -1,11 +1,11 @@
 FROM centos:centos8
-ONBUILD ARG JENKINS_USER=jenkins
-ONBUILD ARG JENKINS_UID=1033
+ARG JENKINS_USER=jenkins
+ARG JENKINS_UID=1033
 ARG JENKINS_GROUP=${JENKINS_USER}
 
 RUN echo "${JENKINS_USER}----${JENKINS_USER}"
 
-ONBUILD RUN yum clean all && yum update -y
+# ONBUILD RUN yum clean all && yum update -y
 WORKDIR /opt
 RUN cd /etc/yum.repos.d/ && sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
         sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
