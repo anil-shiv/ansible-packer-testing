@@ -63,8 +63,17 @@ rm -rf /dist/java/lib/missioncontrol
 ENV JAVA_HOME=/usr/bin/java
 ENV PATH $JAVA_HOME/bin:$PATH
 
-RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-RUN yum -y install packer && ln -s /usr/bin/packer /usr/local/packer
+# RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+# RUN yum -y install packer && ln -s /usr/bin/packer /usr/local/packer
+
+ARG PACKER_VER=1.8.2
+
+RUN wget -O /tmp/packer.zip \
+    "https://releases.hashicorp.com/packer/${PACKER_VER}/packer_${PACKER_VER}_linux_amd64.zip" \
+  && unzip -o /tmp/packer.zip -d /usr/local/bin \
+  && rm -f /tmp/packer.zip
+
+ADD bin /opt/resource
 
 ONBUILD RUN adduser ${JENKINS_USER} -u ${JENKINS_UID} && \
         chown -R ${JENKINS_USER}:${JENKINS_GROUP} /dist && \
