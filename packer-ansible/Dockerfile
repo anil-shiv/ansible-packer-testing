@@ -66,4 +66,8 @@ ENV PATH $JAVA_HOME/bin:$PATH
 RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
 RUN yum -y install packer && ln -s /usr/bin/packer /usr/local/packer
 
-
+ONBUILD RUN adduser ${JENKINS_USER} -u ${JENKINS_UID} && \
+        chown -R ${JENKINS_USER}:${JENKINS_GROUP} /dist && \
+        echo "${JENKINS_USER} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${JENKINS_USER} && \
+        chmod 0440 /etc/sudoers.d/${JENKINS_USER} 
+ONBUILD USER ${JENKINS_USER} 
