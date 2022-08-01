@@ -64,7 +64,6 @@ ENV JAVA_HOME=/usr/bin/java
 ENV PATH $JAVA_HOME/bin:$PATH
 
 RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-RUN yum -y install packer
+RUN yum -y install packer && ln -s /usr/bin/packer /usr/local/packer
 
-#
 
