@@ -68,6 +68,12 @@ ENV PATH $JAVA_HOME/bin:$PATH
 
 ARG PACKER_VER=1.8.2
 
+RUN adduser ${JENKINS_USER} -u ${JENKINS_UID} && \
+        chown -R ${JENKINS_USER}:${JENKINS_GROUP} /dist && \
+        echo "${JENKINS_USER} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${JENKINS_USER} && \
+        chmod 0440 /etc/sudoers.d/${JENKINS_USER} 
+USER ${JENKINS_USER} 
+
 RUN wget -O /tmp/packer.zip \
     "https://releases.hashicorp.com/packer/${PACKER_VER}/packer_${PACKER_VER}_linux_amd64.zip" \
   && unzip -o /tmp/packer.zip -d /usr/local/bin \
@@ -75,8 +81,4 @@ RUN wget -O /tmp/packer.zip \
 
 
 
-# ONBUILD RUN adduser ${JENKINS_USER} -u ${JENKINS_UID} && \
-#         chown -R ${JENKINS_USER}:${JENKINS_GROUP} /dist && \
-#         echo "${JENKINS_USER} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${JENKINS_USER} && \
-#         chmod 0440 /etc/sudoers.d/${JENKINS_USER} 
-# ONBUILD USER ${JENKINS_USER} 
+
