@@ -75,8 +75,8 @@ RUN wget -O /tmp/packer.zip \
 
 
 
-ONBUILD RUN adduser ${JENKINS_USER} -u ${JENKINS_UID} && \
-        chown -R ${JENKINS_USER}:${JENKINS_GROUP} /dist && \
-        echo "${JENKINS_USER} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${JENKINS_USER} && \
-        chmod 0440 /etc/sudoers.d/${JENKINS_USER} 
-ONBUILD USER ${JENKINS_USER} 
+# ONBUILD RUN adduser ${JENKINS_USER} -u ${JENKINS_UID} && \
+#         chown -R ${JENKINS_USER}:${JENKINS_GROUP} /dist && \
+#         echo "${JENKINS_USER} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${JENKINS_USER} && \
+#         chmod 0440 /etc/sudoers.d/${JENKINS_USER} 
+# ONBUILD USER ${JENKINS_USER} 
