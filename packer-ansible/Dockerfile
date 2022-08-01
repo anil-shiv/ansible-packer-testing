@@ -73,7 +73,7 @@ RUN wget -O /tmp/packer.zip \
   && unzip -o /tmp/packer.zip -d /usr/local/bin \
   && rm -f /tmp/packer.zip
 
-ADD bin /opt/resource
+
 
 ONBUILD RUN adduser ${JENKINS_USER} -u ${JENKINS_UID} && \
         chown -R ${JENKINS_USER}:${JENKINS_GROUP} /dist && \
