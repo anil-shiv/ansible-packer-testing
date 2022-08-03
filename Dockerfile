@@ -1,15 +1,15 @@
 FROM centos:centos8
-
-ONBUILD ARG JENKINS_USER=jenkins
-ONBUILD ARG JENKINS_UID=1033
+ARG JENKINS_USER=jenkins
+ARG JENKINS_UID=1033
 ARG JENKINS_GROUP=${JENKINS_USER}
 
 RUN echo "${JENKINS_USER}----${JENKINS_USER}"
 
-ONBUILD RUN yum clean all && yum update -y
+# ONBUILD RUN yum clean all && yum update -y
 WORKDIR /opt
-RUN cd /etc/yum.repos.d/ && sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* \
-            && sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+RUN cd /etc/yum.repos.d/ && sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
+        sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-* && \
+        yum update -y
 RUN yum clean all && \
 yum update -y && \
 yum install -y dstat \
@@ -27,20 +27,11 @@ yum install -y dstat \
                 yum-utils \
                 zip && \
     mkdir /dist && \
-    ln -sf /usr/share/zoneinfo/US/Pacific /etc/localtime && \
-    yum clean all
+    ln -sf /usr/share/zoneinfo/US/Pacific /etc/localtime 
 
-COPY kubernetes.repo /etc/yum.repos.d/
-RUN yum install -y kubectl
-RUN curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
-RUN mv /tmp/eksctl /usr/local/bin
-RUN curl -fsSL -o helm-v3.7.1-linux-amd64.tar.gz https://get.helm.sh/helm-v3.7.1-linux-amd64.tar.gz
-RUN tar -zxvf helm-v3.7.1-linux-amd64.tar.gz
 
-RUN mv linux-amd64/helm /usr/local/bin/helm
 
 RUN yum install epel-release -y
-# RUN yum install ansible -y
 RUN yum install python3.9 -y 
 RUN python3.9 -V
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
@@ -72,6 +63,22 @@ rm -rf /dist/java/lib/missioncontrol
 ENV JAVA_HOME=/usr/bin/java
 ENV PATH $JAVA_HOME/bin:$PATH
 
+# RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+# RUN yum -y install packer && ln -s /usr/bin/packer /usr/local/packer
 
-#
+ARG PACKER_VER=1.8.2
+
+
+
+RUN wget -O /tmp/packer.zip \
+    "https://releases.hashicorp.com/packer/${PACKER_VER}/packer_${PACKER_VER}_linux_amd64.zip" \
+  && unzip -o /tmp/packer.zip -d /usr/local/bin \
+  && rm -f /tmp/packer.zip
+
+RUN adduser ${JENKINS_USER} -u ${JENKINS_UID} && \
+        chown -R ${JENKINS_USER}:${JENKINS_GROUP} /dist && \
+        echo "${JENKINS_USER} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${JENKINS_USER} && \
+        chmod 0440 /etc/sudoers.d/${JENKINS_USER} 
+USER ${JENKINS_USER} 
+
 
