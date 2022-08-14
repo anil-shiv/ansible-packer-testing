@@ -1,0 +1,68 @@
+---
+# tasks file for docker
+
+
+- name: Ensure a list of apt packages are installed
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - wget
+    - zip
+    - gnupg 
+    - lsb-release
+    - nano
+    - git
+
+- name: Install required system packages
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+    state: latest
+
+- name: Add Docker apt repository key.
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+   
+
+- name: Set the stable docker repository
+  apt_repository: 
+    repo: "deb  https://download.docker.com/linux/ubuntu focal stable"
+    state: present
+
+
+- name: Install docker-ce (ubuntu) via apt packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+
+# - name: Install Docker
+#   apt:
+#     name: docker-ce
+#     state: present
+
+- name: Enable Docker CE service at startup
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+# - name: Ensure Python pip packages are installed
+#   pip:
+#     name: "{{ packages }}"
+#   vars:
+#     packages:
+#     - boto
+#     - boto3
+#     - docker-compose
